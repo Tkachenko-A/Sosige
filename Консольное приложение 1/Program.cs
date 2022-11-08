@@ -1,28 +1,64 @@
-﻿using System;
-/// <summary>
-/// автор: Роберт К. Мартин
-/// </summary>
-public class GeneratePrimes
+///</remark>
+using System;
+public class PrimeGenerator
 {
- using NUnit.Framework;
-[TestFixture]
-public class GeneratePrimesTest
-{
- [Test]
- public void TestPrimes()
+ private static int s;
+ private static bool[] f;
+ private static int[] primes;
+ public static int[] GeneratePrimeNumbers(int maxValue)
  {
- int[] nullArray = GeneratePrimes.GeneratePrimeNumbers(0);
- Assert.AreEqual(nullArray.Length, 0);
- int[] minArray = GeneratePrimes.GeneratePrimeNumbers(2);
- Assert.AreEqual(minArray.Length, 1);
- Assert.AreEqual(minArray[0], 2);
- int[] threeArray = GeneratePrimes.GeneratePrimeNumbers(3);
- Assert.AreEqual(threeArray.Length, 2);
- Assert.AreEqual(threeArray[0], 2);
- Assert.AreEqual(threeArray[1], 3);
- int[] centArray = GeneratePrimes.GeneratePrimeNumbers(100);
- Assert.AreEqual(centArray.Length, 25);
- Assert.AreEqual(centArray[24], 97);
+ if (maxValue < 2)
+ return new int[0];
+ else
+ {
+ InitializeSieve(maxValue);
+ Sieve();
+ LoadPrimes();
+ return primes; // вернуть простые числа
  }
-}
+ }
+ private static void LoadPrimes()
+ {
+ int i;
+ int j;
+ // сколько оказалось простых чисел?
+ int count = 0;
+ for (i = 0; i < s; i++)
+ {
+ if (f[i])
+ count++; // увеличить счетчик
+ }
+ primes = new int[count];
+ // поместить простые числа в результирующий массив
+ for (i = 0, j = 0; i < s; i++)
+ {
+ if (f[i]) // если простое
+ primes[j++] = i;
+ }
+ }
+ private static void Sieve()
+ {
+ int i;
+ int j;
+ for (i = 2; i < Math.Sqrt(s) + 1; i++)
+ {
+ if(f[i]) // если i не вычеркнуто, вычеркнуть его кратные.
+ {
+ for (j = 2 * i; j < s; j += i)
+ f[j] = false; // кратное – не простое число
+ }
+ }
+ }
+ private static void InitializeSieve(int maxValue)
+ {
+ // объявления
+ s = maxValue + 1; // размер массива
+ f = new bool[s];
+ int i;
+ // инициализировать элементы массива значением true.
+ for (i = 0; i < s; i++)
+ f[i] = true;
+ // исключить заведомо не простые числа
+ f[0] = f[1] = false;
+ }
 }
